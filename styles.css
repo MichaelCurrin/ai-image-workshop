@@ -70,6 +70,12 @@ button:hover {
   margin-top: 2rem;
 }
 
+#gallery img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
 .error {
   color: #dc2626;
   margin-top: 0.5rem;
