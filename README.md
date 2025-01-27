@@ -11,10 +11,8 @@ See [pollinations.ai](https://pollinations.ai/) website.
 
 ## Preview
 
-<div align="center">
-    <img src="sample.png" alt="Sample screenshot" width="400">
-    <img src="sample-2.png" alt="Sample screenshot 2" width="400">
-</div>
+<img src="sample.png" alt="Sample screenshot" width="400">
+<img src="sample-2.png" alt="Sample screenshot 2" width="400">
 
 
 ## Web app
