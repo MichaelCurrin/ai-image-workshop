@@ -1,10 +1,11 @@
 // Form field IDs to track for storage
-const FORM_FIELDS = ['prompt', 'model', 'seed', 'width', 'height', 'nologo', 'private', 'enhance', 'safe'];
-const STORAGE_KEY = 'pollinationsFormData';
+var FORM_FIELDS = ['prompt', 'model', 'seed', 'width', 'height', 'nologo', 'private', 'enhance', 'safe'];
+var STORAGE_KEY = 'pollinationsFormData';
 
 // Save form data to localStorage
 function saveFormData() {
   const formData = {};
+
   FORM_FIELDS.forEach(fieldId => {
     const element = document.getElementById(fieldId);
     formData[fieldId] = element.type === 'checkbox' ? element.checked : element.value;
@@ -88,21 +89,37 @@ document.getElementById('imageForm').addEventListener('submit', function (e) {
   const params = new URLSearchParams();
 
   const model = document.getElementById('model').value;
-  if (model) params.append('model', model);
+  if (model) {
+    params.append('model', model)
+  };
 
   const seed = document.getElementById('seed').value;
-  if (seed) params.append('seed', seed);
+  if (seed) {
+    params.append('seed', seed)
+  };
 
   const width = document.getElementById('width').value;
-  if (width !== '1024') params.append('width', width);
+  if (width !== '1024') {
+    params.append('width', width)
+  };
 
   const height = document.getElementById('height').value;
-  if (height !== '1024') params.append('height', height);
+  if (height !== '1024') {
+    params.append('height', height)
+  };
 
-  if (document.getElementById('nologo').checked) params.append('nologo', 'true');
-  if (document.getElementById('private').checked) params.append('private', 'true');
-  if (document.getElementById('enhance').checked) params.append('enhance', 'true');
-  if (document.getElementById('safe').checked) params.append('safe', 'true');
+  if (document.getElementById('nologo').checked) {
+    params.append('nologo', 'true')
+  };
+  if (document.getElementById('private').checked) {
+    params.append('private', 'true')
+  };
+  if (document.getElementById('enhance').checked) {
+    params.append('enhance', 'true')
+  };
+  if (document.getElementById('safe').checked) {
+    params.append('safe', 'true')
+  };
 
   const queryString = params.toString();
   if (queryString) {
