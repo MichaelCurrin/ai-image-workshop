@@ -37,7 +37,8 @@
         <form id="imageForm">
             <div class="form-group">
                 <label for="prompt">Prompt *</label>
-                <input type="text" id="prompt" required placeholder="Enter image description">
+                <textarea id="prompt" required placeholder="Enter image description"
+                    rows="6"></textarea>
             </div>
 
             <div class="grid">
@@ -94,7 +95,9 @@
         </form>
     </div>
 
-    <img id="generatedImage" alt="Generated image">
+    <div id="gallery">
+        <p>Generated image</p>
+    </div>
 
     <script src="main.js"></script>
 </body>
