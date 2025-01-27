@@ -46,64 +46,33 @@ function setupFormListeners() {
     }
   });
 }
-
-// Fetch models on page load
 async function fetchModels() {
-  const cachedModels = localStorage.getItem(MODEL_OPTIONS_CACHE_KEY) || '';
-  const cacheExpiry = localStorage.getItem(MODEL_OPTIONS_EXPIRY_KEY) || '';
+  try {
+    const response = await fetch(IMAGE_API_MODELS_URL);
+    const models = await response.json();
 
-  if (!cachedModels || !cacheExpiry || new Date().getTime() > new Date(cacheExpiry).getTime()) {
-    try {
-      const response = await fetch(IMAGE_API_MODELS_URL);
-      const models = await response.json();
-
-      const modelSelect = document.getElementById('model');
-      modelSelect.innerHTML = ''; // Clear loading option
-
-      // Add default empty option
-      const defaultOption = document.createElement('option');
-      defaultOption.value = '';
-      defaultOption.textContent = 'Select a model';
-      modelSelect.appendChild(defaultOption);
-
-      // Add model options
-      loadFreshModels(modelSelect, models);
-
-      // Save models to cache
-      const ONE_DAY = 1000 * 60 * 60 * 24;
-      localStorage.setItem(MODEL_OPTIONS_CACHE_KEY, JSON.stringify(models));
-      localStorage.setItem(MODEL_OPTIONS_EXPIRY_KEY, new Date().getTime() + ONE_DAY);
-    } catch (error) {
-      console.error('Error fetching models:', error);
-      document.getElementById('modelError').style.display = 'block';
-    }
-  } else {
     const modelSelect = document.getElementById('model');
-    loadCachedModels(modelSelect, cachedModels);
+    modelSelect.innerHTML = ''; // Clear loading option
+
+    // Add default empty option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Select a model';
+    modelSelect.appendChild(defaultOption);
+
+    models.forEach(model => {
+      const option = document.createElement('option');
+      option.value = model;
+      option.textContent = model;
+      modelSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error fetching models:', error);
+    document.getElementById('modelError').style.display = 'block';
   }
 
   // Load saved data after models are populated
   loadFormData();
-}
-
-function loadCachedModels(modelSelect, cachedModels) {
-  JSON.parse(cachedModels).forEach(model => {
-    const option = document.createElement('option');
-    option.value = model;
-    option.textContent = model;
-    modelSelect.appendChild(option);
-  });
-}
-
-function loadFreshModels(modelSelect, models) {
-  models.forEach(model => {
-    const option = document.createElement('option');
-    option.value = model;
-    option.textContent = model;
-    modelSelect.appendChild(option);
-  });
-  localStorage.setItem(MODEL_OPTIONS_CACHE_KEY, JSON.stringify(models));
-  localStorage.setItem(MODEL_OPTIONS_EXPIRY_KEY, new Date().getTime() + 3600000); // 1 hour expiry
 }
 
 
@@ -156,21 +125,39 @@ function buildUrl() {
   return url;
 }
 
+function updateImage(url) {
+  const gallery = document.getElementById('gallery');
+  gallery.innerHTML = '';
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener';
+
+  const img = document.createElement('img');
+  img.src = url;
+  a.appendChild(img);
+  gallery.appendChild(a);
+}
+
 // Initialize the form
 fetchModels();
 setupFormListeners();
 
-document.getElementById('imageForm').addEventListener('submit', function (e) {
-  e.preventDefault();
-
-  // Build the URL with parameters
+function process() {
   const url = buildUrl();
-
-  // Update image
-  const img = document.getElementById('generatedImage');
-  img.src = url;
-  img.style.display = 'block';
-
-  // Save form data after submission
+  updateImage(url)
   saveFormData();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && document.activeElement.tagName !== 'TEXTAREA') {
+    process();
+  }
 });
+
+document.getElementById('imageForm')
+  .addEventListener('submit', function (e) {
+    e.preventDefault();
+    process()
+  });
