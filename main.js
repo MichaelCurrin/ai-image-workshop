@@ -147,7 +147,7 @@ document.getElementById('imageForm').addEventListener('submit', function (e) {
 
   const queryString = params.toString();
   if (queryString) {
-    url += `&${queryString}`;
+    url += `?${queryString}`;
   }
 
   // Update image
