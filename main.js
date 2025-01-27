@@ -1,6 +1,7 @@
-// Form field IDs to track for storage
 var FORM_FIELDS = ['prompt', 'model', 'seed', 'width', 'height', 'nologo', 'private', 'enhance', 'safe'];
-var STORAGE_KEY = 'pollinationsFormData';
+var FORM_DATA_STORAGE_KEY = 'pollinationsFormData';
+var MODEL_OPTIONS_CACHE_KEY = 'modelOptions';
+var MODEL_OPTIONS_EXPIRY_KEY = 'modelOptionsExpiry';
 
 // Save form data to localStorage
 function saveFormData() {
@@ -10,12 +11,12 @@ function saveFormData() {
     const element = document.getElementById(fieldId);
     formData[fieldId] = element.type === 'checkbox' ? element.checked : element.value;
   });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+  localStorage.setItem(FORM_DATA_STORAGE_KEY, JSON.stringify(formData));
 }
 
 // Load form data from localStorage
 function loadFormData() {
-  const savedData = localStorage.getItem(STORAGE_KEY);
+  const savedData = localStorage.getItem(FORM_DATA_STORAGE_KEY);
   if (savedData) {
     const formData = JSON.parse(savedData);
     FORM_FIELDS.forEach(fieldId => {
@@ -58,12 +59,14 @@ async function fetchModels() {
     modelSelect.appendChild(defaultOption);
 
     // Add model options
-    models.forEach(model => {
-      const option = document.createElement('option');
-      option.value = model;
-      option.textContent = model;
-      modelSelect.appendChild(option);
-    });
+    const cachedModels = localStorage.getItem(MODEL_OPTIONS_CACHE_KEY) || '';
+    const cacheExpiry = localStorage.getItem(MODEL_OPTIONS_EXPIRY_KEY) || '';
+
+    if (cachedModels && cacheExpiry && new Date().getTime() < new Date(cacheExpiry).getTime()) {
+      loadCachedModels(modelSelect, cachedModels);
+    } else {
+      loadFreshModels(modelSelect, models);
+    }
 
     // Load saved data after models are populated
     loadFormData();
@@ -72,6 +75,27 @@ async function fetchModels() {
     document.getElementById('modelError').style.display = 'block';
   }
 }
+
+function loadCachedModels(modelSelect, cachedModels) {
+  JSON.parse(cachedModels).forEach(model => {
+    const option = document.createElement('option');
+    option.value = model;
+    option.textContent = model;
+    modelSelect.appendChild(option);
+  });
+}
+
+function loadFreshModels(modelSelect, models) {
+  models.forEach(model => {
+    const option = document.createElement('option');
+    option.value = model;
+    option.textContent = model;
+    modelSelect.appendChild(option);
+  });
+  localStorage.setItem(MODEL_OPTIONS_CACHE_KEY, JSON.stringify(models));
+  localStorage.setItem(MODEL_OPTIONS_EXPIRY_KEY, new Date().getTime() + 3600000); // 1 hour expiry
+}
+
 
 // Initialize the form
 fetchModels();
