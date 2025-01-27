@@ -2,6 +2,7 @@ var FORM_FIELDS = ['prompt', 'model', 'seed', 'width', 'height', 'nologo', 'priv
 var FORM_DATA_STORAGE_KEY = 'pollinationsFormData';
 var MODEL_OPTIONS_CACHE_KEY = 'modelOptions';
 var MODEL_OPTIONS_EXPIRY_KEY = 'modelOptionsExpiry';
+var IMAGE_API_URL = 'https://image.pollinations.ai/prompt/';
 
 // Save form data to localStorage
 function saveFormData() {
@@ -97,19 +98,12 @@ function loadFreshModels(modelSelect, models) {
 }
 
 
-// Initialize the form
-fetchModels();
-setupFormListeners();
+function buildUrl() {
+  const userPrompt = document.getElementById('prompt').value
 
-document.getElementById('imageForm').addEventListener('submit', function (e) {
-  e.preventDefault();
+  const prompt = encodeURIComponent(userPrompt);
+  let url = `${IMAGE_API_URL}${prompt}`;
 
-  // Build the URL with parameters
-  const baseUrl = 'https://image.pollinations.ai/prompt/';
-  const prompt = encodeURIComponent(document.getElementById('prompt').value);
-  let url = `${baseUrl}${prompt}`;
-
-  // Add optional parameters
   const params = new URLSearchParams();
 
   const model = document.getElementById('model').value;
@@ -149,6 +143,19 @@ document.getElementById('imageForm').addEventListener('submit', function (e) {
   if (queryString) {
     url += `?${queryString}`;
   }
+
+  return url;
+}
+
+// Initialize the form
+fetchModels();
+setupFormListeners();
+
+document.getElementById('imageForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  // Build the URL with parameters
+  const url = buildUrl();
 
   // Update image
   const img = document.getElementById('generatedImage');
