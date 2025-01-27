@@ -1,8 +1,11 @@
 var FORM_FIELDS = ['prompt', 'model', 'seed', 'width', 'height', 'nologo', 'private', 'enhance', 'safe'];
 var FORM_DATA_STORAGE_KEY = 'pollinationsFormData';
+
 var MODEL_OPTIONS_CACHE_KEY = 'modelOptions';
 var MODEL_OPTIONS_EXPIRY_KEY = 'modelOptionsExpiry';
-var IMAGE_API_URL = 'https://image.pollinations.ai/prompt/';
+
+var IMAGE_API_GENERATE_URL = 'https://image.pollinations.ai/prompt/';
+var IMAGE_API_MODELS_URL = 'https://image.pollinations.ai/models'
 
 // Save form data to localStorage
 function saveFormData() {
@@ -46,35 +49,41 @@ function setupFormListeners() {
 
 // Fetch models on page load
 async function fetchModels() {
-  try {
-    const response = await fetch('https://image.pollinations.ai/models');
-    const models = await response.json();
+  const cachedModels = localStorage.getItem(MODEL_OPTIONS_CACHE_KEY) || '';
+  const cacheExpiry = localStorage.getItem(MODEL_OPTIONS_EXPIRY_KEY) || '';
 
-    const modelSelect = document.getElementById('model');
-    modelSelect.innerHTML = ''; // Clear loading option
+  if (!cachedModels || !cacheExpiry || new Date().getTime() > new Date(cacheExpiry).getTime()) {
+    try {
+      const response = await fetch(IMAGE_API_MODELS_URL);
+      const models = await response.json();
 
-    // Add default empty option
-    const defaultOption = document.createElement('option');
-    defaultOption.value = '';
-    defaultOption.textContent = 'Select a model';
-    modelSelect.appendChild(defaultOption);
+      const modelSelect = document.getElementById('model');
+      modelSelect.innerHTML = ''; // Clear loading option
 
-    // Add model options
-    const cachedModels = localStorage.getItem(MODEL_OPTIONS_CACHE_KEY) || '';
-    const cacheExpiry = localStorage.getItem(MODEL_OPTIONS_EXPIRY_KEY) || '';
+      // Add default empty option
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = 'Select a model';
+      modelSelect.appendChild(defaultOption);
 
-    if (cachedModels && cacheExpiry && new Date().getTime() < new Date(cacheExpiry).getTime()) {
-      loadCachedModels(modelSelect, cachedModels);
-    } else {
+      // Add model options
       loadFreshModels(modelSelect, models);
-    }
 
-    // Load saved data after models are populated
-    loadFormData();
-  } catch (error) {
-    console.error('Error fetching models:', error);
-    document.getElementById('modelError').style.display = 'block';
+      // Save models to cache
+      const ONE_DAY = 1000 * 60 * 60 * 24;
+      localStorage.setItem(MODEL_OPTIONS_CACHE_KEY, JSON.stringify(models));
+      localStorage.setItem(MODEL_OPTIONS_EXPIRY_KEY, new Date().getTime() + ONE_DAY);
+    } catch (error) {
+      console.error('Error fetching models:', error);
+      document.getElementById('modelError').style.display = 'block';
+    }
+  } else {
+    const modelSelect = document.getElementById('model');
+    loadCachedModels(modelSelect, cachedModels);
   }
+
+  // Load saved data after models are populated
+  loadFormData();
 }
 
 function loadCachedModels(modelSelect, cachedModels) {
@@ -102,7 +111,7 @@ function buildUrl() {
   const userPrompt = document.getElementById('prompt').value
 
   const prompt = encodeURIComponent(userPrompt);
-  let url = `${IMAGE_API_URL}${prompt}`;
+  let url = `${IMAGE_API_GENERATE_URL}${prompt}`;
 
   const params = new URLSearchParams();
 
