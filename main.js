@@ -1,11 +1,11 @@
-var FORM_FIELDS = ['prompt', 'model', 'seed', 'width', 'height', 'nologo', 'private', 'enhance', 'safe'];
-var FORM_DATA_STORAGE_KEY = 'pollinationsFormData';
+const FORM_FIELDS = ['prompt', 'model', 'seed', 'width', 'height', 'nologo', 'private', 'enhance', 'safe'];
+const FORM_DATA_STORAGE_KEY = 'pollinationsFormData';
 
-var MODEL_OPTIONS_CACHE_KEY = 'modelOptions';
-var MODEL_OPTIONS_EXPIRY_KEY = 'modelOptionsExpiry';
+const MODEL_OPTIONS_CACHE_KEY = 'modelOptions';
+const MODEL_OPTIONS_EXPIRY_KEY = 'modelOptionsExpiry';
 
-var IMAGE_API_GENERATE_URL = 'https://image.pollinations.ai/prompt/';
-var IMAGE_API_MODELS_URL = 'https://image.pollinations.ai/models'
+const IMAGE_API_GENERATE_URL = 'https://image.pollinations.ai/prompt/';
+const IMAGE_API_MODELS_URL = 'https://image.pollinations.ai/models'
 
 /**
  * Save the form data to localStorage, keyed by FORM_DATA_STORAGE_KEY.
