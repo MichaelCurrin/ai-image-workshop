@@ -172,12 +172,15 @@ async function updateImage(url) {
   img.onerror = async function () {
     console.log('Image failed to load:', url);
 
-    const errorOutput = await getImageErrorDetails(url);
+    const errorMessage = document.getElementById('errorMessage');
+    const p = document.createElement('p');
 
-    const errorMessage = document.createElement('p');
-    errorMessage.textContent = errorOutput;
-    errorMessage.style.color = 'white';
-    imageContainer.insertBefore(errorMessage, a);
+    const errorOutput = await getImageErrorDetails(url);
+    p.textContent = errorOutput;
+    p.style.color = 'white';
+
+    errorMessage.innerHTML = '';
+    errorMessage.appendChild(p);
   };
 
   img.onload = function () {
