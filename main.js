@@ -209,7 +209,8 @@ fetchModels();
 setupFormListeners();
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
+  const isTextArea = e.target.tagName === "TEXTAREA";
+  if ((e.key === "Enter" && !isTextArea) || (e.ctrlKey && e.key === "Enter" && isTextArea)) {
     process();
   }
 });
