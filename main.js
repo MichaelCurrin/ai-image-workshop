@@ -108,10 +108,7 @@ function buildUrl() {
     params.append('nologo', 'true')
   };
   if (document.getElementById('private').checked) {
-    params.append('private', 'true')
-  };
-  if (document.getElementById('enhance').checked) {
-    params.append('enhance', 'true')
+    params.append('nofeed', 'true')
   };
   if (document.getElementById('safe').checked) {
     params.append('safe', 'true')
