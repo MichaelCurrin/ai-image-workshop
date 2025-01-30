@@ -7,7 +7,9 @@ var MODEL_OPTIONS_EXPIRY_KEY = 'modelOptionsExpiry';
 var IMAGE_API_GENERATE_URL = 'https://image.pollinations.ai/prompt/';
 var IMAGE_API_MODELS_URL = 'https://image.pollinations.ai/models'
 
-// Save form data to localStorage
+/**
+ * Save the form data to localStorage, keyed by FORM_DATA_STORAGE_KEY.
+ */
 function saveFormData() {
   const formData = {};
 
@@ -18,7 +20,9 @@ function saveFormData() {
   localStorage.setItem(FORM_DATA_STORAGE_KEY, JSON.stringify(formData));
 }
 
-// Load form data from localStorage
+/**
+ * Load form data from localStorage and populates the form fields.
+ */
 function loadFormData() {
   const savedData = localStorage.getItem(FORM_DATA_STORAGE_KEY);
   if (savedData) {
@@ -36,7 +40,13 @@ function loadFormData() {
   }
 }
 
-// Add input event listeners to all form fields
+/**
+ * Set up event listeners on the form fields to save the form data to localStorage.
+ *
+ * Uses the 'input' and 'change' events to capture changes in all the form fields.
+ * These events are chosen to ensure that the form data is updated when the user
+ * types something in a text field, or selects/deselects a checkbox.
+ */
 function setupFormListeners() {
   FORM_FIELDS.forEach(fieldId => {
     const element = document.getElementById(fieldId);
@@ -54,7 +64,6 @@ async function fetchModels() {
     const modelSelect = document.getElementById('model');
     modelSelect.innerHTML = ''; // Clear loading option
 
-    // Add default empty option
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
     defaultOption.textContent = 'Select a model';
@@ -71,11 +80,16 @@ async function fetchModels() {
     document.getElementById('modelError').style.display = 'block';
   }
 
-  // Load saved data after models are populated
   loadFormData();
 }
 
 
+/**
+ * Builds the URL for the AI image generation API, using the current state of
+ * the form.
+ *
+ * @returns {string} The URL for the API request.
+ */
 function buildUrl() {
   const userPrompt = document.getElementById('prompt').value
 
@@ -116,15 +130,37 @@ function buildUrl() {
 
   const queryString = params.toString();
   if (queryString) {
-    url += `?${queryString}`;
+    return `${url}?${queryString}`;
   }
 
   return url;
 }
+/**
+ * Fetches the error details for a failed image generation request.
+ *
+ * @param {string} url - The URL of the image generation request that failed.
+ *   Expect to be a 500 or similar so don't check status code.
+ */
+async function getImageErrorDetails(url) {
+  const response = await fetch(url, { method: 'GET' });
 
-function updateImage(url) {
-  const gallery = document.getElementById('gallery');
-  gallery.innerHTML = '';
+  const respData = await response.json()
+  const { error, message } = respData
+
+  if (!error || !message) {
+    return 'Error loading image.';
+  }
+  return `${error}: ${message}`
+}
+
+/**
+ * Updates the gallery with a new image using the provided URL.
+ *
+ * @param {string} url - The URL of the image to be loaded.
+ */
+async function updateImage(url) {
+  const imageContainer = document.getElementById('gallery');
+  imageContainer.innerHTML = '';
 
   const a = document.createElement('a');
   a.href = url;
@@ -132,20 +168,37 @@ function updateImage(url) {
   a.rel = 'noopener';
 
   const img = document.createElement('img');
+
+  img.onerror = async function () {
+    console.log('Image failed to load:', url);
+
+    const errorOutput = await getImageErrorDetails(url);
+
+    const errorMessage = document.createElement('p');
+    errorMessage.textContent = errorOutput;
+    errorMessage.style.color = 'white';
+    imageContainer.insertBefore(errorMessage, a);
+  };
+
+  img.onload = function () {
+    console.log('Image loaded successfully:', url)
+  }
+
   img.src = url;
   a.appendChild(img);
-  gallery.appendChild(a);
+  imageContainer.appendChild(a);
 }
 
-// Initialize the form
-fetchModels();
-setupFormListeners();
 
 function process() {
   const url = buildUrl();
   updateImage(url)
   saveFormData();
 }
+
+// Initialize the form
+fetchModels();
+setupFormListeners();
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && document.activeElement.tagName !== 'TEXTAREA') {
