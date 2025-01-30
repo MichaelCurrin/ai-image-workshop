@@ -210,7 +210,10 @@ setupFormListeners();
 
 document.addEventListener("keydown", (e) => {
   const isTextArea = e.target.tagName === "TEXTAREA";
-  if ((e.key === "Enter" && !isTextArea) || (e.ctrlKey && e.key === "Enter" && isTextArea)) {
+  if (
+    (e.key === "Enter" && !isTextArea) ||
+    (e.ctrlKey && e.key === "Enter" && isTextArea)
+  ) {
     process();
   }
 });
