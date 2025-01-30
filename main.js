@@ -1,4 +1,4 @@
-const FORM_FIELDS = ['prompt', 'model', 'seed', 'width', 'height', 'nologo', 'private', 'enhance', 'safe'];
+const FORM_FIELDS = ['prompt', 'model', 'seed', 'width', 'height', 'nologo', 'nofeed', 'safe'];
 const FORM_DATA_STORAGE_KEY = 'pollinationsFormData';
 
 const MODEL_OPTIONS_CACHE_KEY = 'modelOptions';
@@ -121,7 +121,7 @@ function buildUrl() {
   if (document.getElementById('nologo').checked) {
     params.append('nologo', 'true')
   };
-  if (document.getElementById('private').checked) {
+  if (document.getElementById('nofeed').checked) {
     params.append('nofeed', 'true')
   };
   if (document.getElementById('safe').checked) {
