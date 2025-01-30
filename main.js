@@ -1,9 +1,6 @@
 const FORM_FIELDS = ['prompt', 'model', 'seed', 'width', 'height', 'nologo', 'nofeed', 'safe'];
 const FORM_DATA_STORAGE_KEY = 'pollinationsFormData';
 
-const MODEL_OPTIONS_CACHE_KEY = 'modelOptions';
-const MODEL_OPTIONS_EXPIRY_KEY = 'modelOptionsExpiry';
-
 const IMAGE_API_GENERATE_URL = 'https://image.pollinations.ai/prompt/';
 const IMAGE_API_MODELS_URL = 'https://image.pollinations.ai/models'
 
