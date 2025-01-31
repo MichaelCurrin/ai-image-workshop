@@ -49,14 +49,11 @@ function loadFormData() {
 
 /**
  * Set up event listeners on the form fields to save the form data to localStorage.
- *
- * Uses the 'input' and 'change' events to capture changes in all the form fields.
- * These events are chosen to ensure that the form data is updated when the user
- * types something in a text field, or selects/deselects a checkbox.
  */
 function setupFormListeners() {
   FORM_FIELDS.forEach((fieldId) => {
     const element = document.getElementById(fieldId);
+    
     if (element) {
       element.addEventListener("input", saveFormData);
       element.addEventListener("change", saveFormData);
@@ -70,7 +67,7 @@ async function fetchModels() {
     const models = await response.json();
 
     const modelSelect = document.getElementById("model");
-    modelSelect.innerHTML = ""; // Clear loading option
+    modelSelect.innerHTML = "";
 
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
@@ -79,6 +76,7 @@ async function fetchModels() {
 
     models.forEach((model) => {
       const option = document.createElement("option");
+      
       option.value = model;
       option.textContent = model;
       modelSelect.appendChild(option);
@@ -176,8 +174,6 @@ async function updateImage(url) {
   const img = document.createElement("img");
 
   img.onerror = async function () {
-    console.log("Image failed to load:", url);
-
     const errorMessage = document.getElementById("errorMessage");
     const p = document.createElement("p");
 
@@ -190,7 +186,8 @@ async function updateImage(url) {
   };
 
   img.onload = function () {
-    console.log("Image loaded successfully:", url);
+    const errorMessage = document.getElementById("errorMessage");
+    errorMessage.innerHTML = ""; 
   };
 
   img.src = url;
