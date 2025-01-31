@@ -63,6 +63,7 @@ function setupFormListeners() {
     }
   });
 }
+
 async function fetchModels() {
   try {
     const response = await fetch(IMAGE_API_MODELS_URL);
@@ -91,8 +92,7 @@ async function fetchModels() {
 }
 
 /**
- * Builds the URL for the AI image generation API, using the current state of
- * the form.
+ * Build the URL for the API.
  *
  * @returns {string} The URL for the API request.
  */
